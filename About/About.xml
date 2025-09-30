@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ModMetaData>
+    <name>Learning Overhaul</name>
+    <author>xenohim</author> 
+    <packageId>public.learning</packageId>
+    <description>Overhaul learning and children needs to include recreation.</description>
+    <supportedVersions>
+        <li>1.5</li>
+    </supportedVersions>
+</ModMetaData>
