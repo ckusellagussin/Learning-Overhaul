@@ -51,6 +51,7 @@
     <ItemGroup>
         <Compile Include="JoyUtilityPatches.cs" />
         <Compile Include="LearningOverhaulMain.cs" />
+        <Compile Include="LearningUtilityPatches_ChangeRecreationName.cs" />
         <Compile Include="LearningUtilityPatches_LearningRateFactor.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
     </ItemGroup>
