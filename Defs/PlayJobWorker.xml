@@ -1,0 +1,10 @@
+<Defs>
+    
+    <InteractionDef>
+        <defName>ChildGroupActivity</defName>
+        <label>play together</label>
+        <symbol>play</symbol>
+        <socialFightBaseChance>0.0</socialFightBaseChance>
+    </InteractionDef>
+
+</Defs>

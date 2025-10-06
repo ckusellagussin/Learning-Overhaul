@@ -1,0 +1,17 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\bin\Debug\Learning_Overhaul.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\bin\Debug\Learning_Overhaul.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\bin\Debug\Assembly-CSharp.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\bin\Debug\UnityEngine.CoreModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\bin\Debug\UnityEngine.IMGUIModule.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\obj\Debug\Learning.8A0CF4F3.Up2Date
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Assemblies\Learning_Overhaul.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\1.6\Assemblies\Learning_Overhaul.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\Source\Learning_Overhaul\obj\Debug\Learning.8A0CF4F3.Up2Date
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Learning-Overhaul\Source\Learning_Overhaul\obj\Debug\Learning_Overhaul.pdb

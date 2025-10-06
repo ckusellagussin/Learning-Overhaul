@@ -1,0 +1,26 @@
+<Defs>
+    <ThoughtDef>
+        <defName>LowPlay</defName>
+        <label>Bored</label>
+        <description>I'm bored...I want to play games</description>
+        <stackLimit>1</stackLimit>
+        <workerClass>Learning_Overhaul.ThoughtWorker_PlayNeed</workerClass>
+        <stages>
+            <li>
+                <label>a bit bored</label>
+                <description>I want some fun</description>
+                <baseMoodEffect>-5</baseMoodEffect>
+            </li>
+            <li>
+                <label>bored</label>
+                <description>I haven't had fun in a while, I WANT TO PLAY!</description>
+                <baseMoodEffect>-12</baseMoodEffect>
+            </li>
+            <li>
+            <label>very bored</label>
+            <description>I'm SOOOOOOO BORED...I think i'm going to cry</description>
+            <baseMoodEffect>-20</baseMoodEffect>
+            </li>
+        </stages>
+    </ThoughtDef>
+</Defs>
