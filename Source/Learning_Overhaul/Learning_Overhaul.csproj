@@ -49,11 +49,14 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="InteractionWorker_GroupActivity.cs" />
+        <Compile Include="JobDriver_GroupActivity.cs" />
         <Compile Include="JoyUtilityPatches.cs" />
         <Compile Include="LearningOverhaulMain.cs" />
         <Compile Include="LearningUtilityPatches_ChangeRecreationName.cs" />
         <Compile Include="LearningUtilityPatches_LearningRateFactor.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="ThinkNode_GroupActivity.cs" />
         <Compile Include="ThoughtWorker_PlayNeed.cs" />
     </ItemGroup>
     <ItemGroup>
