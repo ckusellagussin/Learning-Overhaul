@@ -1,7 +1,7 @@
 <Defs>
     
     <InteractionDef>
-        <defName>GroupActivity</defName>
+        <defName>Group Activity</defName>
         <label>play together</label>
         <symbol>play</symbol>
         <socialFightBaseChance>0.0</socialFightBaseChance>
