@@ -9,65 +9,65 @@ namespace Learning_Overhaul
     {
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
-            if (pawn.ageTracker.AgeBiologicalYears >= 13)
+            // Only children with low joy
+            if (pawn.ageTracker.AgeBiologicalYears >= 13 || pawn.needs.joy.CurLevelPercentage > 0.5f)
                 return ThinkResult.NoJob;
 
-            if (pawn.needs.joy.CurLevelPercentage > 0.5f)
+            // COORDINATION: Only initiate if this pawn has lower joy than potential playmates
+            // This prevents both children from trying to start activities simultaneously
+            var playmate = FindPlaymate(pawn);
+            if (playmate == null)
                 return ThinkResult.NoJob;
 
-            Pawn playmate = FindPlaymate(pawn);
-            if (playmate != null)
+            // Only initiate if this pawn has lower joy than the playmate
+            // This ensures only one child starts the activity
+            if (pawn.needs.joy.CurLevelPercentage >= playmate.needs.joy.CurLevelPercentage)
+                return ThinkResult.NoJob;
+
+            Log.Message($"=== GroupActivity ThinkNode for {pawn.Name} (joy: {pawn.needs.joy.CurLevelPercentage:P0}) ===");
+            Log.Message($"  Found playmate: {playmate.Name} (joy: {playmate.needs.joy.CurLevelPercentage:P0})");
+
+            // Find a recreational building
+            var building = FindRecreationalBuilding(pawn);
+            if (building == null)
             {
-                Thing recreationalThing = FindRecreationalThing(pawn);
-                Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("Group Activity"), playmate, recreationalThing);
+                Log.Message($"  No recreational building found - direct social play");
+                // For direct play, make the job longer to reduce flickering
+                Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("GroupActivity"), playmate);
+                job.expiryInterval = 2000; // Longer job to prevent rapid restarting
                 return new ThinkResult(job, this);
             }
 
-            return ThinkResult.NoJob;
+            Log.Message($"  Found building: {building.def.defName}");
+            
+            Job jobWithBuilding = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("GroupActivity"), playmate, building);
+            return new ThinkResult(jobWithBuilding, this);
         }
 
         private Pawn FindPlaymate(Pawn pawn)
         {
-            return pawn.Map.mapPawns.AllPawns.Find(p =>
+            return pawn.Map.mapPawns.AllPawns.FirstOrDefault(p =>
                 p != pawn &&
                 p.RaceProps.Humanlike &&
                 p.ageTracker.AgeBiologicalYears < 13 &&
                 p.needs.joy.CurLevelPercentage < 0.5f &&
                 !p.Downed &&
                 !p.InMentalState &&
-                !p.Drafted &&
-                pawn.CanReach(p, PathEndMode.Touch, Danger.None) &&
-                p.Awake() &&
-                !p.IsBurning() &&
-                p.health.capacities.CapableOf(PawnCapacityDefOf.Talking) &&
-                p.health.capacities.CapableOf(PawnCapacityDefOf.Moving)
-            );
+                !IsPawnInGroupActivity(p) && // Don't interrupt pawns already in activities
+                pawn.CanReach(p, PathEndMode.Touch, Danger.None));
         }
 
-        private Thing FindRecreationalThing(Pawn pawn)
+        private bool IsPawnInGroupActivity(Pawn pawn)
         {
-            return pawn.Map.listerBuildings.allBuildingsColonist
-                .Where(building =>
-                    IsLikelyRecreationalBuilding(building) &&
-                    pawn.CanReserve(building) &&
-                    !building.IsForbidden(pawn) &&
-                    building.IsSociallyProper(pawn)
-                )
-                .FirstOrDefault();
+            return pawn.CurJob?.def == DefDatabase<JobDef>.GetNamed("GroupActivity");
         }
 
-        private bool IsLikelyRecreationalBuilding(Building building) // Fixed casing
+        private Thing FindRecreationalBuilding(Pawn pawn)
         {
-            return building.def.statBases != null && (
-                building.def.statBases.Any(stat => stat.stat.defName.Contains("Joy")) ||
-                building.def.statBases.Any(stat => stat.stat.defName.Contains("Recreation")) ||
-                building.def.description?.ToLower().Contains("joy") == true ||
-                building.def.description?.ToLower().Contains("recreation") == true ||
-                building.def.description?.ToLower().Contains("game") == true ||
-                building.def.description?.ToLower().Contains("play") == true ||
-                building.def.label?.ToLower().Contains("game") == true ||
-                building.def.label?.ToLower().Contains("play") == true
-            );
+            return pawn.Map.listerBuildings.allBuildingsColonist.FirstOrDefault(building =>
+                (building.def.statBases?.Any(stat => stat.stat.defName.Contains("Joy")) == true ||
+                 building.def.statBases?.Any(stat => stat.stat.defName.Contains("Recreation")) == true) &&
+                pawn.CanReach(building, PathEndMode.InteractionCell, Danger.None));
         }
     }
 }

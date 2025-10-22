@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <JobDef>
+        <defName>GroupActivity</defName>
+        <driverClass>Learning_Overhaul.JobDriver_GroupActivity</driverClass>
+        <reportString>playing with TargetA.</reportString>
+        <joyMaxParticipants>2</joyMaxParticipants>
+        <joyDuration>1200</joyDuration>
+        <joyGainRate>1.0</joyGainRate>
+        <playerInterruptible>true</playerInterruptible>
+        <checkOverrideOnDamage>OnlyIfInstigatorNotJobTarget</checkOverrideOnDamage>
+        <alwaysShowWeapon>false</alwaysShowWeapon>
+        <neverShowWeapon>false</neverShowWeapon>
+        <suspendable>true</suspendable>
+        <casualInterruptible>true</casualInterruptible>
+        <collideWithPawns>true</collideWithPawns>
+    </JobDef>
+</Defs>

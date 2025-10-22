@@ -5,7 +5,6 @@ using Verse;
 
 namespace Learning_Overhaul
 {
-    // Working patch for changing the need label for children
     [HarmonyPatch(typeof(Need), nameof(Need.LabelCap), MethodType.Getter)]
     public static class ChangeRecreationLabelForChildrenPatch
     {

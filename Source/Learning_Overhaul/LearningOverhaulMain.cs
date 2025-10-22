@@ -11,8 +11,6 @@ namespace Learning_Overhaul
         {
             var harmony = new Harmony("CKG.LearningOverhaul");
             harmony.PatchAll();
-            
-            Log.Message("Learning Overhaul: Harmony patches applied");
         }
     }
     

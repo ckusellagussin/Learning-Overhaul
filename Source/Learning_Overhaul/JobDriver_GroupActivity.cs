@@ -7,22 +7,20 @@ namespace Learning_Overhaul
 {
     public class JobDriver_GroupActivity : JobDriver
     {
+        private Pawn OtherChild => job.targetA.Thing as Pawn;
+        private Thing RecreationalThing => job.targetB.Thing;
 
-        private const int PlayDuration = 1200;
-        
-        private Pawn otherChild => job.targetA.Thing as Pawn;
-        private Thing recreationalThing => job.targetB.Thing; 
-
+        // Joy gain: 0-100% in 2 game hours max (5000 ticks)
+        private const float JoyGainPerTick = 0.0002f;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            if (!pawn.Reserve(otherChild, job, 1, -1, null, errorOnFailed))
+            if (!pawn.Reserve(OtherChild, job, 1, -1, null, errorOnFailed))
                 return false;
 
-            if (recreationalThing != null)
+            if (RecreationalThing != null)
             {
-                if (!pawn.Reserve(recreationalThing, job, 1, -1, null, errorOnFailed))
-                    return false;
+                return pawn.Reserve(RecreationalThing, job, job.def.joyMaxParticipants, 0, null, errorOnFailed);
             }
 
             return true;
@@ -30,100 +28,90 @@ namespace Learning_Overhaul
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
-
-            if (recreationalThing != null)
+            this.EndOnDespawnedOrNull(TargetIndex.A, JobCondition.Incompletable);
+            
+            if (RecreationalThing != null)
             {
-                yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.InteractionCell);
-
-                Toil useBuildingToil = new Toil();
-
-                useBuildingToil.initAction = () =>
-                {
-                    pawn.rotationTracker.FaceCell(recreationalThing.Position);
-                    if (otherChild != null &&
-                        otherChild.CanReach(recreationalThing, PathEndMode.InteractionCell, Danger.None))
-                    {
-
-                        Job otherChildJob = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("GroupActivity"), pawn,
-                            recreationalThing);
-                        otherChild.jobs.StartJob(otherChildJob, JobCondition.InterruptForced);
-
-                    }
-
-                };
-                useBuildingToil.tickAction = () =>
-                {
-
-                    float joyGain = 0.0005f;
-                    pawn.needs.joy.GainJoy(joyGain, JoyKindDefOf.Social);
-
-                    if (otherChild != null)
-                    {
-
-                        otherChild.needs.joy.GainJoy(joyGain, JoyKindDefOf.Social);
-
-                    }
-
-                    if (pawn.IsHashIntervalTick(100) && Rand.Value < 0.3f)
-                    {
-
-                        MoteMaker.MakeStaticMote(pawn.DrawPos, pawn.Map, ThingDefOf.Mote_Speech);
-
-                    }
-                };
-                useBuildingToil.defaultCompleteMode = ToilCompleteMode.Delay;
-                useBuildingToil.defaultDuration = PlayDuration;
-                yield return useBuildingToil;
-            }
-
-            else
-            {
-
-                yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
-
+                this.EndOnDespawnedOrNull(TargetIndex.B, JobCondition.Incompletable);
+                
+                yield return Toils_Misc.FindRandomAdjacentReachableCell(TargetIndex.B, TargetIndex.C);
+                yield return Toils_Reserve.Reserve(TargetIndex.C, 1, -1, null);
+                yield return Toils_Goto.GotoCell(TargetIndex.C, PathEndMode.OnCell);
+                
                 Toil playToil = new Toil();
-                playToil.initAction = () => pawn.rotationTracker.FaceTarget(otherChild);
+                playToil.initAction = () =>
+                {
+                    job.locomotionUrgency = LocomotionUrgency.Walk;
+                };
+                
                 playToil.tickAction = () =>
                 {
-                    if (pawn.IsHashIntervalTick(100))
+                    pawn.rotationTracker.FaceCell(RecreationalThing.Position);
+                    
+                    // Joy gain every tick
+                    pawn.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
+                    if (OtherChild != null)
                     {
+                        OtherChild.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
+                    }
 
-                        float joyGain = 0.0006f;
-                        pawn.needs.joy.GainJoy(joyGain, JoyKindDefOf.Social);
-                        otherChild.needs.joy.GainJoy(joyGain, JoyKindDefOf.Social);
-
-                        if (Rand.Value < 0.15f)
-                        {
-
-                            MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Play");
-
-                        }
-
-
+                    // Social interaction effects
+                    if (pawn.IsHashIntervalTick(100) && Rand.Value < 0.3f)
+                    {
+                        MoteMaker.MakeStaticMote(pawn.DrawPos, pawn.Map, ThingDefOf.Mote_Speech);
                     }
                 };
+                
+                playToil.handlingFacing = true;
+                playToil.socialMode = RandomSocialMode.SuperActive;
                 playToil.defaultCompleteMode = ToilCompleteMode.Delay;
-                playToil.defaultDuration = PlayDuration;
+                playToil.defaultDuration = job.def.joyDuration;
                 yield return playToil;
+                yield return Toils_Reserve.Release(TargetIndex.C);
+            }
+            else
+            {
+                // Fallback: direct social play - make this more stable
+                yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+                
+                Toil playToil = new Toil();
+                playToil.initAction = () =>
+                {
+                    pawn.rotationTracker.FaceTarget(OtherChild);
+                    // Set a longer expiry for direct play to prevent flickering
+                    job.expiryInterval = 2000;
+                };
+                
+                playToil.tickAction = () =>
+                {
+                    // Joy gain every tick
+                    pawn.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
+                    OtherChild.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
 
+                    // Social interaction effects
+                    if (pawn.IsHashIntervalTick(100) && Rand.Value < 0.15f)
+                    {
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Play");
+                    }
+                };
+                
+                playToil.defaultCompleteMode = ToilCompleteMode.Delay;
+                playToil.defaultDuration = 2000; // Longer duration for direct play
+                yield return playToil;
             }
 
+            // Final social interaction
             yield return new Toil
             {
                 initAction = () =>
                 {
-                    if (Rand.Value < 0.7f && otherChild != null)
+                    if (Rand.Value < 0.7f && OtherChild != null)
                     {
-
-                        pawn.interactions.TryInteractWith(otherChild, InteractionDefOf.Chitchat);
-
+                        pawn.interactions.TryInteractWith(OtherChild, InteractionDefOf.Chitchat);
                     }
-
                 },
                 defaultCompleteMode = ToilCompleteMode.Instant
             };
-
         }
-        
     }
 }
