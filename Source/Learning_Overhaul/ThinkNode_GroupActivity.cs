@@ -9,32 +9,25 @@ namespace Learning_Overhaul
     {
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
-            // Only children with low joy
             if (pawn.ageTracker.AgeBiologicalYears >= 13 || pawn.needs.joy.CurLevelPercentage > 0.5f)
                 return ThinkResult.NoJob;
-
-            // COORDINATION: Only initiate if this pawn has lower joy than potential playmates
-            // This prevents both children from trying to start activities simultaneously
+            
             var playmate = FindPlaymate(pawn);
             if (playmate == null)
                 return ThinkResult.NoJob;
-
-            // Only initiate if this pawn has lower joy than the playmate
-            // This ensures only one child starts the activity
+            
             if (pawn.needs.joy.CurLevelPercentage >= playmate.needs.joy.CurLevelPercentage)
                 return ThinkResult.NoJob;
 
             Log.Message($"=== GroupActivity ThinkNode for {pawn.Name} (joy: {pawn.needs.joy.CurLevelPercentage:P0}) ===");
             Log.Message($"  Found playmate: {playmate.Name} (joy: {playmate.needs.joy.CurLevelPercentage:P0})");
-
-            // Find a recreational building
+            
             var building = FindRecreationalBuilding(pawn);
             if (building == null)
             {
                 Log.Message($"  No recreational building found - direct social play");
-                // For direct play, make the job longer to reduce flickering
                 Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("GroupActivity"), playmate);
-                job.expiryInterval = 2000; // Longer job to prevent rapid restarting
+                job.expiryInterval = 2000;
                 return new ThinkResult(job, this);
             }
 
@@ -53,7 +46,7 @@ namespace Learning_Overhaul
                 p.needs.joy.CurLevelPercentage < 0.5f &&
                 !p.Downed &&
                 !p.InMentalState &&
-                !IsPawnInGroupActivity(p) && // Don't interrupt pawns already in activities
+                !IsPawnInGroupActivity(p) && 
                 pawn.CanReach(p, PathEndMode.Touch, Danger.None));
         }
 

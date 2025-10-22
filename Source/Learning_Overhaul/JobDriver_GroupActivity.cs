@@ -9,8 +9,7 @@ namespace Learning_Overhaul
     {
         private Pawn OtherChild => job.targetA.Thing as Pawn;
         private Thing RecreationalThing => job.targetB.Thing;
-
-        // Joy gain: 0-100% in 2 game hours max (5000 ticks)
+        
         private const float JoyGainPerTick = 0.0002f;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
@@ -48,14 +47,12 @@ namespace Learning_Overhaul
                 {
                     pawn.rotationTracker.FaceCell(RecreationalThing.Position);
                     
-                    // Joy gain every tick
                     pawn.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
                     if (OtherChild != null)
                     {
                         OtherChild.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
                     }
-
-                    // Social interaction effects
+                    
                     if (pawn.IsHashIntervalTick(100) && Rand.Value < 0.3f)
                     {
                         MoteMaker.MakeStaticMote(pawn.DrawPos, pawn.Map, ThingDefOf.Mote_Speech);
@@ -71,24 +68,20 @@ namespace Learning_Overhaul
             }
             else
             {
-                // Fallback: direct social play - make this more stable
                 yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
                 
                 Toil playToil = new Toil();
                 playToil.initAction = () =>
                 {
                     pawn.rotationTracker.FaceTarget(OtherChild);
-                    // Set a longer expiry for direct play to prevent flickering
                     job.expiryInterval = 2000;
                 };
                 
                 playToil.tickAction = () =>
                 {
-                    // Joy gain every tick
                     pawn.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
                     OtherChild.needs.joy.GainJoy(JoyGainPerTick, JoyKindDefOf.Social);
-
-                    // Social interaction effects
+                    
                     if (pawn.IsHashIntervalTick(100) && Rand.Value < 0.15f)
                     {
                         MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Play");
@@ -96,11 +89,10 @@ namespace Learning_Overhaul
                 };
                 
                 playToil.defaultCompleteMode = ToilCompleteMode.Delay;
-                playToil.defaultDuration = 2000; // Longer duration for direct play
+                playToil.defaultDuration = 2000; 
                 yield return playToil;
             }
-
-            // Final social interaction
+            
             yield return new Toil
             {
                 initAction = () =>
